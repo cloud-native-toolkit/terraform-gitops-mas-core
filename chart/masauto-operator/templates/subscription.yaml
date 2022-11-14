@@ -1,0 +1,12 @@
+{{- $name := "masauto-operator" }}
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: {{ $name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  channel: {{ .Values.channel | default "alpha" }}
+  installPlanApproval: Automatic
+  name: {{ $name }}
+  source: {{ .Values.catalogName | default "ecosystem-engineering-catalog" }}
+  sourceNamespace: {{ .Values.catalogNamespace | default "openshift-marketplace" }}

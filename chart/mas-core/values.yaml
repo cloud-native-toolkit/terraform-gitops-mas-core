@@ -1,0 +1,15 @@
+# Default values for mas-core.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+mas_channel: "8.8.x"
+entitlement_key_secret: ""
+mas_instance_id: "inst1"
+mas_workspace_id: "masdev"
+mas_workspace_name: "MAS Development"
+mongodb_storage_class: ""
+uds_storage_class: ""
+
+uds_contact_email: ""
+uds_contact_first_name: ""
+uds_contact_last_name: ""
