@@ -48,7 +48,10 @@ validate_gitops_content "${NAMESPACE}" "${LAYER}" "${SERVER_NAME}" "${TYPE}" "${
 
 check_k8s_namespace "${NAMESPACE}"
 
-#check_k8s_resource "${NAMESPACE}" "deployment" "${COMPONENT_NAME}"
+check_k8s_resource "${NAMESPACE}" "subscription" "masauto-operator"
+check_k8s_resource "${NAMESPACE}" "core" "masauto-core"
+
+sleep 600
 
 cd ..
 rm -rf .testrepo
