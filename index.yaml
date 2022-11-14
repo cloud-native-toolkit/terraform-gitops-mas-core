@@ -1,0 +1,10 @@
+name: gitops-masauto-operator
+type: gitops
+description: >-
+  Module to populate a gitops repo with the resources to provision
+  masauto-operator
+tags:
+  - tools
+  - gitops
+versions: []
+id: github.com/cloud-native-toolkit/terraform-gitops-masauto-operator
