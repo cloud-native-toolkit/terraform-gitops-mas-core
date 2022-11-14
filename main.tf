@@ -30,9 +30,19 @@ locals {
   layer_config = var.gitops_config[local.layer]
 }
 
+resource gitops_namespace ns {
+
+  name = local.namespace
+  create_operator_group = true
+  server_name = var.server_name
+  branch = local.application_branch
+  config = yamlencode(var.gitops_config)
+  credentials = yamlencode(var.git_credentials)
+}
+
 resource gitops_pull_secret entitlement_secret {
   name = local.secret_name
-  namespace = local.namespace
+  namespace = gitops_namespace.ns.name
   server_name = var.server_name
   branch = local.application_branch
   layer = local.layer
@@ -62,7 +72,7 @@ resource gitops_module operator {
   name = "masauto-operator"
   content_dir = local.operator_yaml_dir
   type = "operators"
-  namespace = local.namespace
+  namespace = gitops_namespace.ns.name
   server_name = var.server_name
   layer = local.layer
   branch = local.application_branch
@@ -84,7 +94,7 @@ resource gitops_module instance {
   depends_on = [gitops_pull_secret.entitlement_secret, gitops_module.operator, null_resource.create_instance_yaml]
 
   name = local.name
-  namespace = local.namespace
+  namespace = gitops_namespace.ns.name
   content_dir = local.instance_yaml_dir
   server_name = var.server_name
   layer = local.layer
