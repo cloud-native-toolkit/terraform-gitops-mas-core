@@ -8,7 +8,7 @@ DEST_DIR="$2"
 
 mkdir -p "${DEST_DIR}"
 
-cp -R "${MODULE_DIR}/chart/${NAME}" "${DEST_DIR}"
+cp -R "${MODULE_DIR}/chart/${NAME}/"* "${DEST_DIR}"
 
 if [[ -n "${VALUES_CONTENT}" ]]; then
   echo "${VALUES_CONTENT}" > "${DEST_DIR}/${NAME}/values.yaml"
