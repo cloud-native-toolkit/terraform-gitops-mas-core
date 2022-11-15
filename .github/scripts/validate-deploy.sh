@@ -55,7 +55,13 @@ check_k8s_namespace "${NAMESPACE}"
 check_k8s_resource "${NAMESPACE}" "subscription" "masauto-operator"
 check_k8s_resource "${NAMESPACE}" "core" "masauto-core"
 
-sleep 600
+count=0
+while [[ count -lt 20 ]]; do
+  echo "***** Resources in ${NAMESPACE} *****"
+  kubectl get all -n "${NAMESPACE}"
+  sleep 60
+  echo "*****"
+done
 
 cd ..
 rm -rf .testrepo
