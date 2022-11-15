@@ -15,6 +15,6 @@ spec:
   mongodb_storage_class: {{ required "The mongodb_storage_class value is required" .Values.mongodb_storage_class }}
   uds_contact:
     email: {{ required "The uds_contact_email value is required" .Values.uds_contact_email }}
-    first_name: {{ "The uds_contact_first_name value is required" .Values.uds_contact_first_name }}
-    last_name: {{ "The uds_contact_last_name value is required" .Values.uds_contact_last_name }}
+    first_name: {{ required "The uds_contact_first_name value is required" .Values.uds_contact_first_name }}
+    last_name: {{ required "The uds_contact_last_name value is required" .Values.uds_contact_last_name }}
   uds_storage_class: {{ required "The uds_storage_class value is required" .Values.uds_storage_class }}
