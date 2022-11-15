@@ -3,9 +3,9 @@ kind: Core
 metadata:
   name: masauto-core
   namespace: {{ .Release.Namespace }}
-annotations:
-  ansible.operator-sdk/reconcile-period: "0s"
-  argocd.argoproj.io/sync-wave: "-5"
+  annotations:
+    ansible.operator-sdk/reconcile-period: "0s"
+    argocd.argoproj.io/sync-wave: "-5"
 spec:
   mas_channel: {{ .Values.mas_channel | default "8.8.x" }}
   ibm_entitlement_secret: {{ required "The entitlement_key_secret value is required" .Values.entitlement_key_secret }}
