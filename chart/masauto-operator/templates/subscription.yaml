@@ -4,6 +4,8 @@ kind: Subscription
 metadata:
   name: {{ $name }}
   namespace: {{ .Release.Namespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"
 spec:
   channel: {{ .Values.channel | default "alpha" }}
   installPlanApproval: Automatic
