@@ -52,8 +52,12 @@ validate_gitops_content "${NAMESPACE}" "${LAYER}" "${SERVER_NAME}" "${TYPE}" "${
 
 check_k8s_namespace "${NAMESPACE}"
 
-check_k8s_resource "${NAMESPACE}" "subscription" "masauto-operator"
-check_k8s_resource "${NAMESPACE}" "core" "masauto-core"
+check_k8s_resource "${NAMESPACE}" subscription masauto-operator
+check_k8s_resource "${NAMESPACE}" deployment masauto-operator-controller-manager
+
+check_k8s_resource "${NAMESPACE}" secret ibm-entitlement-key
+
+check_k8s_resource "${NAMESPACE}" core masauto-core
 
 count=0
 while [[ count -lt 20 ]]; do

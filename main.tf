@@ -1,7 +1,9 @@
 locals {
   name              = "mas-core"
-  operator_yaml_dir = "${path.cwd}/.tmp/${local.name}/chart/masauto-operator"
-  instance_yaml_dir = "${path.cwd}/.tmp/${local.name}/chart/${local.name}"
+  tmp_dir           = "${path.cwd}/.tmp/${local.name}"
+  secret_dir        = "${local.tmp_dir}/secrets"
+  operator_yaml_dir = "${local.tmp_dir}/chart/masauto-operator"
+  instance_yaml_dir = "${local.tmp_dir}/chart/${local.name}"
 
   channel = "alpha"
   operator_values_content = {
@@ -40,22 +42,6 @@ resource gitops_namespace ns {
   credentials = yamlencode(var.git_credentials)
 }
 
-resource gitops_pull_secret entitlement_secret {
-  name = local.secret_name
-  namespace = gitops_namespace.ns.name
-  server_name = var.server_name
-  branch = local.application_branch
-  layer = local.layer
-  config = yamlencode(var.gitops_config)
-  credentials = yamlencode(var.git_credentials)
-  kubeseal_cert = var.kubeseal_cert
-
-  registry_server = "cp.icr.io"
-  registry_username = "cp"
-  registry_password = var.entitlement_key
-  secret_name = local.secret_name
-}
-
 resource null_resource create_operator_yaml {
   provisioner "local-exec" {
     command = "${path.module}/scripts/create-yaml.sh 'masauto-operator' '${local.operator_yaml_dir}'"
@@ -80,6 +66,21 @@ resource gitops_module operator {
   credentials = yamlencode(var.git_credentials)
 }
 
+data clis_check clis {
+  clis = ["kubectl"]
+}
+
+resource null_resource create_secret {
+  provisioner "local-exec" {
+    command = "${path.module}/scripts/create-secret.sh ${local.secret_name} ${gitops_namespace.ns.name} cp ${local.secret_dir}"
+
+    environment = {
+      BIN_DIR = data.clis_check.clis.bin_dir
+      PASSWORD = var.entitlement_key
+    }
+  }
+}
+
 resource null_resource create_instance_yaml {
   provisioner "local-exec" {
     command = "${path.module}/scripts/create-yaml.sh '${local.name}' '${local.instance_yaml_dir}'"
@@ -90,8 +91,17 @@ resource null_resource create_instance_yaml {
   }
 }
 
+resource gitops_seal_secrets secret {
+  source_dir = local.secret_dir
+  dest_dir   = "${local.instance_yaml_dir}/templates"
+  kubeseal_cert = var.kubeseal_cert
+  tmp_dir = local.tmp_dir
+  annotations = ["argocd.argoproj.io/sync-wave=-10"]
+}
+
+
 resource gitops_module instance {
-  depends_on = [gitops_pull_secret.entitlement_secret, gitops_module.operator, null_resource.create_instance_yaml]
+  depends_on = [gitops_seal_secrets.secret, gitops_module.operator, null_resource.create_instance_yaml]
 
   name = local.name
   namespace = gitops_namespace.ns.name
