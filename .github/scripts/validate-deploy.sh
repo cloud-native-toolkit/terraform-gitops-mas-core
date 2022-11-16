@@ -49,6 +49,7 @@ validate_gitops_content "${NAMESPACE}" "${LAYER}" "${SERVER_NAME}" "operators" "
 
 validate_gitops_content "${NAMESPACE}" "${LAYER}" "${SERVER_NAME}" "${TYPE}" "${COMPONENT_NAME}" "Chart.yaml"
 validate_gitops_content "${NAMESPACE}" "${LAYER}" "${SERVER_NAME}" "${TYPE}" "${COMPONENT_NAME}" "values.yaml"
+validate_gitops_content "${NAMESPACE}" "${LAYER}" "${SERVER_NAME}" "${TYPE}" "${COMPONENT_NAME}" "templates/secret-ibm-entitlement-key.yaml"
 
 check_k8s_namespace "${NAMESPACE}"
 
