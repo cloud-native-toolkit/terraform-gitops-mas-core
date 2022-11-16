@@ -19,4 +19,6 @@ mkdir -p "${DEST_DIR}"
 kubectl create secret generic "${SECRET_NAME}" \
   -n "${NAMESPACE}" \
   --from-literal="username=${USERNAME}" \
-  --from-literal="password=${PASSWORD}" > "${DEST_DIR}/secret-${SECRET_NAME}.yaml"
+  --from-literal="password=${PASSWORD}" \
+  --dry-run=client \
+  --output yaml > "${DEST_DIR}/secret-${SECRET_NAME}.yaml"
