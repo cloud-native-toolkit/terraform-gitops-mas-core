@@ -1,11 +1,12 @@
-name: gitops-masauto-operator
+name: gitops-mas-core
 type: gitops
 description: >-
   Module to populate a gitops repo with the resources to provision
-  masauto-operator
+  Maximo Application Suite Core
 tags:
-  - tools
   - gitops
+  - maximo application suite
+  - core
 versions:
   - platforms:
       - kubernetes
@@ -14,6 +15,8 @@ versions:
     providers:
       - name: gitops
         source: cloud-native-toolkit/gitops
+      - name: clis
+        source: cloud-native-toolkit/clis
     dependencies:
       - id: gitops
         refs:

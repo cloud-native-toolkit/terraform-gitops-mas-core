@@ -64,7 +64,7 @@ count=0
 while [[ count -lt 20 ]]; do
   echo "***** Resources in ${NAMESPACE} *****"
   kubectl get all -n "${NAMESPACE}"
-  echo "*****"
+  echo "***** - ${count}"
   check_k8s_resource "${NAMESPACE}" core masauto-core
   count=$((count + 1))
   sleep 60
