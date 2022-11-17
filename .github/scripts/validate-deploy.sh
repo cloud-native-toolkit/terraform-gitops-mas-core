@@ -36,6 +36,7 @@ TYPE=$(jq -r '.type // "base"' gitops-output.json)
 
 mkdir -p .testrepo
 
+echo "*** Cloning git repo ${GIT_REPO}"
 git clone https://${GIT_TOKEN}@${GIT_REPO} .testrepo
 
 cd .testrepo || exit 1
