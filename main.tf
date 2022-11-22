@@ -94,11 +94,11 @@ resource null_resource create_instance_yaml {
 resource gitops_seal_secrets secret {
   depends_on = [null_resource.create_secret, null_resource.create_instance_yaml]
 
-  source_dir = local.secret_dir
-  dest_dir   = "${local.instance_yaml_dir}/templates"
+  source_dir    = local.secret_dir
+  dest_dir      = "${local.instance_yaml_dir}/templates"
   kubeseal_cert = var.kubeseal_cert
-  tmp_dir = local.tmp_dir
-  annotations = ["argocd.argoproj.io/sync-wave=-10"]
+  tmp_dir       = local.tmp_dir
+  annotations   = ["argocd.argoproj.io/sync-wave=-10"]
 }
 
 
