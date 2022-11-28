@@ -16,6 +16,7 @@ fi
 
 mkdir -p "${DEST_DIR}"
 
+echo "Writing yaml for secret ${SECRET_NAME} in namespace ${NAMESPACE} to secret-${SECRET_NAME}.yaml"
 kubectl create secret generic "${SECRET_NAME}" \
   -n "${NAMESPACE}" \
   --from-literal="username=${USERNAME}" \
