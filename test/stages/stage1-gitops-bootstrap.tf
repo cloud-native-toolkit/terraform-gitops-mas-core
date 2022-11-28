@@ -12,6 +12,6 @@ module "gitops-bootstrap" {
   bootstrap_path      = module.gitops.bootstrap_path
   sealed_secret_cert  = module.cert.cert
   sealed_secret_private_key = module.cert.private_key
-  bpptstrap_prefix    = var.bootstrap_prefix
+  bootstrap_prefix    = var.bootstrap_prefix
   create_webhook      = true
 }
