@@ -59,14 +59,21 @@ check_k8s_resource "${NAMESPACE}" deployment masauto-operator-controller-manager
 
 check_k8s_resource "${NAMESPACE}" secret ibm-entitlement-key || exit 1
 
-check_k8s_resource "${NAMESPACE}" core masauto-core || exit 1
+check_k8s_resource "${NAMESPACE}" suite inst1 || exit 1
 
 count=0
 while [[ count -lt 20 ]]; do
-  echo "***** Resources in ${NAMESPACE} *****"
-  kubectl get all -n "${NAMESPACE}"
-  echo "***** - ${count}"
-  check_k8s_resource "${NAMESPACE}" core masauto-core
+  RESULT=$(kubectl get -n "${NAMESPACE}" suite inst1 -o json)
+
+  CONDITION=$(echo "${RESULT}" | jq -c '.status.conditions | select(.type == "SLSIntegrationReady")')
+
+  if [[ $(echo "${CONDITION}" | jq -r '.reason') == "MissingLicenseFile" ]]; then
+    break
+  fi
+
+  echo "**** Suite result ****"
+  echo "${RESULT}"
+
   count=$((count + 1))
   sleep 60
 done
