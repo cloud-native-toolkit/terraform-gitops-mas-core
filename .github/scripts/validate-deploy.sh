@@ -59,7 +59,12 @@ check_k8s_resource "${NAMESPACE}" deployment masauto-operator-controller-manager
 
 check_k8s_resource "${NAMESPACE}" secret ibm-entitlement-key || exit 1
 
-check_k8s_resource "${NAMESPACE}" suite inst1 || exit 1
+check_k8s_resource ibm-sls deployment sls-api-licensing || exit 1
+
+check_k8s_resource ibm-common-services deployment user-data-services-operator || exit 1
+check_k8s_resource ibm-common-services deployment ibm-licensing-operator || exit 1
+
+check_k8s_resource mas-inst1-core suite inst1 || exit 1
 
 count=0
 while [[ count -lt 20 ]]; do
