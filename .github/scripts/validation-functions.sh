@@ -31,13 +31,13 @@ check_k8s_namespace () {
   local NS="$1"
 
   count=0
-  until kubectl get namespace "${NS}" 1> /dev/null 2> /dev/null || [[ $count -eq 20 ]]; do
+  until kubectl get namespace "${NS}" 1> /dev/null 2> /dev/null || [[ $count -eq 40 ]]; do
     echo "Waiting for namespace: ${NS}"
     count=$((count + 1))
-    sleep 15
+    sleep 30
   done
 
-  if [[ $count -eq 20 ]]; then
+  if [[ $count -eq 40 ]]; then
     echo "Timed out waiting for namespace: ${NS}" >&2
     exit 1
   else
