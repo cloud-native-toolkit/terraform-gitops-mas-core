@@ -2,6 +2,7 @@
 
 Module to populate a gitops repo with the resources to provision the MAS Auto Operator and create an instance of MAS Core.
 
+
 ## Software dependencies
 
 The module depends on the following software components:
