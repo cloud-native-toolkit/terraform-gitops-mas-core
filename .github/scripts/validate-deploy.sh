@@ -73,7 +73,7 @@ count=0
 while [[ count -lt 40 ]]; do
   RESULT=$(kubectl get -n mas-inst1-core suite inst1 -o json)
 
-  CONDITION=$(echo "${RESULT}" | jq -c '.status.conditions | select(.type == "SLSIntegrationReady")')
+  CONDITION=$(echo "${RESULT}" | jq -c '.status.conditions[] | select(.type == "SLSIntegrationReady")')
 
   if [[ $(echo "${CONDITION}" | jq -r '.reason') == "MissingLicenseFile" ]]; then
     break
