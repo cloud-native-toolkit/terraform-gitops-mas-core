@@ -6,6 +6,9 @@ terraform {
       source = "cloud-native-toolkit/gitops"
       version = ">= 0.1.7"
     }
+    clis = {
+      source = "cloud-native-toolkit/clis"
+    }
   }
 
 }
