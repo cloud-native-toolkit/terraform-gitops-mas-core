@@ -66,6 +66,10 @@ check_k8s_resource ibm-sls deployment sls-api-licensing || exit 1
 check_k8s_resource ibm-common-services deployment user-data-services-operator || exit 1
 #check_k8s_resource ibm-common-services deployment ibm-licensing-operator || exit 1
 
+check_k8s_resource ibm-common-services statefulset kafka-kafka || exit 1
+
+check_k8s_resource ibm-common-services deployments event-api-deployment || exit 1
+
 check_k8s_namespace mas-inst1-core || exit 1
 check_k8s_resource mas-inst1-core suite inst1 || exit 1
 
@@ -75,7 +79,9 @@ while [[ count -lt 40 ]]; do
 
   CONDITION=$(echo "${RESULT}" | jq -c '.status.conditions[] | select(.type == "SLSIntegrationReady")')
 
-  if [[ $(echo "${CONDITION}" | jq -r '.reason') == "MissingLicenseFile" ]]; then
+  SLS_INTEGRATION_REASON=$(echo "${CONDITION}" | jq -r '.reason')
+  echo "SLS Integration reason: ${SLS_INTEGRATION_REASON}"
+  if [[ "${SLS_INTEGRATION_REASON}" == "MissingLicenseFile" ]]; then
     break
   fi
 
@@ -83,7 +89,7 @@ while [[ count -lt 40 ]]; do
   echo "${RESULT}"
 
   count=$((count + 1))
-  sleep 60
+  sleep 90
 done
 
 cd ..

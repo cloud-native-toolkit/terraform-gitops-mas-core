@@ -2,7 +2,6 @@
 
 Module to populate a gitops repo with the resources to provision the MAS Auto Operator and create an instance of MAS Core.
 
-
 ## Software dependencies
 
 The module depends on the following software components:
@@ -21,7 +20,8 @@ The module depends on the following software components:
 This module makes use of the output from other modules:
 
 - GitOps - github.com/cloud-native-toolkit/terraform-tools-gitops.git
-- Namespace - github.com/cloud-native-toolkit/terraform-gitops-namespace.git
+- Toolkit Catalog - github.com/cloud-native-toolkit/terraform-gitops-toolkit-catalog.git
+- Storage Manager  - github.com/cloud-native-toolkit/terraform-util-storage-class-manager.git
 
 ## Example usage
 
