@@ -26,6 +26,11 @@ versions:
         refs:
           - source: github.com/cloud-native-toolkit/terraform-gitops-toolkit-catalog.git
             version: '>= 1.0.0'
+      - id: storage_manager
+        optional: true
+        refs:
+          - source: github.com/cloud-native-toolkit/terraform-util-storage-class-manager.git
+            version: '>= 1.0.0'
     variables:
       - name: gitops_config
         moduleRef:
@@ -47,3 +52,11 @@ versions:
         moduleRef:
           id: catalog
           output: name
+      - name: mongodb_storage_class
+        moduleRef:
+          id: storage_manager
+          output: block_storage_class
+      - name: uds_storage_class
+        moduleRef:
+          id: storage_manager
+          output: block_storage_class
