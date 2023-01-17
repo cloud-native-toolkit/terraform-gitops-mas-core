@@ -64,6 +64,7 @@ check_k8s_resource ibm-common-services deployment cert-manager-controller || exi
 check_k8s_resource ibm-sls deployment sls-api-licensing || exit 1
 
 check_k8s_resource ibm-common-services deployment user-data-services-operator || exit 1
+check_k8s_resource ibm-common-services analyticsproxy analyticsproxy || exit 1
 
 check_k8s_resource ibm-common-services deployment kafka-entity-operator || exit 1
 
