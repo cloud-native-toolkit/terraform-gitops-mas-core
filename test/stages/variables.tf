@@ -70,7 +70,7 @@ variable "git_username" {
 }
 
 variable "kubeseal_namespace" {
-  default = "sealed-secrets"
+  default = "sealed-secret"
 }
 
 variable "cp_entitlement_key" {

@@ -1,11 +1,12 @@
-name: gitops-masauto-operator
+name: gitops-mas-core
 type: gitops
 description: >-
   Module to populate a gitops repo with the resources to provision
-  masauto-operator
+  Maximo Application Suite Core
 tags:
-  - tools
   - gitops
+  - maximo application suite
+  - core
 versions:
   - platforms:
       - kubernetes
@@ -14,14 +15,21 @@ versions:
     providers:
       - name: gitops
         source: cloud-native-toolkit/gitops
+      - name: clis
+        source: cloud-native-toolkit/clis
     dependencies:
       - id: gitops
         refs:
           - source: github.com/cloud-native-toolkit/terraform-tools-gitops.git
             version: '>= 1.1.0'
-      - id: namespace
+      - id: catalog
         refs:
-          - source: github.com/cloud-native-toolkit/terraform-gitops-namespace.git
+          - source: github.com/cloud-native-toolkit/terraform-gitops-toolkit-catalog.git
+            version: '>= 1.0.0'
+      - id: storage_manager
+        optional: true
+        refs:
+          - source: github.com/cloud-native-toolkit/terraform-util-storage-class-manager.git
             version: '>= 1.0.0'
     variables:
       - name: gitops_config
@@ -36,11 +44,19 @@ versions:
         moduleRef:
           id: gitops
           output: server_name
-      - name: namespace
-        moduleRef:
-          id: namespace
-          output: name
       - name: kubeseal_cert
         moduleRef:
           id: gitops
           output: sealed_secrets_cert
+      - name: catalog_name
+        moduleRef:
+          id: catalog
+          output: name
+      - name: mongodb_storage_class
+        moduleRef:
+          id: storage_manager
+          output: block_storage_class
+      - name: uds_storage_class
+        moduleRef:
+          id: storage_manager
+          output: block_storage_class
