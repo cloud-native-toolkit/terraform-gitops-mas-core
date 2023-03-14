@@ -75,3 +75,9 @@ variable "kubeseal_namespace" {
 
 variable "cp_entitlement_key" {
 }
+
+variable "host_id" {
+}
+
+variable "license_key" {
+}

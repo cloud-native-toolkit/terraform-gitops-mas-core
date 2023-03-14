@@ -1,0 +1,38 @@
+{{- if .Values.secretName }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: license-job
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    ansible.operator-sdk/reconcile-period: "0s"
+    argocd.argoproj.io/sync-wave: "-5"
+  labels:
+    {{- include "mas-core.labels" . | nindent 4 }}
+spec:
+  template:
+    metadata:
+      labels:
+        run: {{ include "mas-core.name" . }}
+    spec:
+      serviceAccountName: {{ include "mas-core.serviceAccountName" . }}
+      containers:
+        - image: {{ printf "%s:%s" .Values.image.imageName .Values.image.imageTag }}
+          name: toolkit
+          env:
+            - name: NAMESPACE
+              value: {{ default "ibm-sls" .Values.targetNamespace }}
+            - name: SECRET_NAME
+              value: {{ .Values.secretName }}
+          command:
+            - /bin/bash
+            - -c
+            - |
+              set -ex
+              
+              oc new-project "${NAMESPACE}"
+              oc get secret "${SECRET_NAME}" -o json | \
+                jq '{"apiVersion":.apiVersion,"type":.type,"kind":.kind,"metadata":{"name":.metadata.name,"labels":.labels},"data":.data}' | \
+                oc apply -n "${NAMESPACE}" -f -
+      restartPolicy: Never
+{{- end }}

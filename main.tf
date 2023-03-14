@@ -5,6 +5,10 @@ locals {
   operator_yaml_dir = "${local.tmp_dir}/chart/masauto-operator"
   instance_yaml_dir = "${local.tmp_dir}/chart/${local.name}"
 
+  license_secret_name = "sls-bootstrap"
+
+  license_content = var.license_key_file != "" ? file(var.license_key_file) : var.license_key
+
   channel = "alpha"
   operator_values_content = {
     channel = local.channel
@@ -22,6 +26,18 @@ locals {
     uds_contact_email = var.uds_contact_email
     uds_contact_first_name = var.uds_contact_first_name
     uds_contact_last_name = var.uds_contact_last_name
+
+    targetNamespace = "ibm-sls"
+    serviceAccount = {
+      name = "mas-core"
+      create = true
+      annotations = {}
+    }
+    image = {
+      imageName = "quay.io/cloudnativetoolkit/cli-tools-core"
+      imageTag = "v1.1-v1.6.1"
+    }
+    secretName = local.license_content != "" ? local.license_secret_name : ""
   }
 
   secret_name = "ibm-entitlement-key"
@@ -70,13 +86,24 @@ data clis_check clis {
   clis = ["kubectl"]
 }
 
-resource null_resource create_secret {
+resource null_resource create_entitlement_secret {
   provisioner "local-exec" {
     command = "${path.module}/scripts/create-secret.sh ${local.secret_name} ${gitops_namespace.ns.name} cp ${local.secret_dir}"
 
     environment = {
       BIN_DIR = data.clis_check.clis.bin_dir
       PASSWORD = var.entitlement_key
+    }
+  }
+}
+
+resource null_resource create_license_secret {
+  provisioner "local-exec" {
+    command = "${path.module}/scripts/create-license-secret.sh ${local.license_secret_name} ${gitops_namespace.ns.name} '${var.host_id}' '${local.secret_dir}'"
+
+    environment = {
+      BIN_DIR = data.clis_check.clis.bin_dir
+      LICENSE_KEY = local.license_content
     }
   }
 }
@@ -92,7 +119,7 @@ resource null_resource create_instance_yaml {
 }
 
 resource gitops_seal_secrets secret {
-  depends_on = [null_resource.create_secret, null_resource.create_instance_yaml]
+  depends_on = [null_resource.create_entitlement_secret, null_resource.create_license_secret, null_resource.create_instance_yaml]
 
   source_dir    = local.secret_dir
   dest_dir      = "${local.instance_yaml_dir}/templates"

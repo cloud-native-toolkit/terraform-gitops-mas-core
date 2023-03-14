@@ -135,3 +135,22 @@ variable "uds_contact_last_name" {
   type        = string
   description = "The last name of the contact person for UDS"
 }
+
+variable "host_id" {
+  type        = string
+  description = "The host id for the MAS core instance that is included in the license. If none is provided the host id will be generated."
+  default     = ""
+}
+
+variable "license_key" {
+  type        = string
+  description = "The contents of the license key that should be applied to the new instance. The value can be provided directly or via the 'license_key_file' variable. If none is provided the license will need to be applied manually after install."
+  default     = ""
+}
+
+variable "license_key_file" {
+  type        = string
+  description = "The name of the file containing the license key that should be applied to the new instance. The value can be provided in a file or directly via the 'license_key' variable. If none is provided the license will need to be applied manually after install."
+  default     = ""
+}
+
