@@ -149,7 +149,7 @@ resource gitops_service_account job_rbac {
   config = var.gitops_config
   credentials = var.git_credentials
   create_service_account = false
-  rbac_namespace = gitops_namespace.sls_ns.name
+  rbac_namespace = gitops_namespace.sls_ns[0].name
   rules {
     api_groups = [""]
     resources = ["secrets"]
