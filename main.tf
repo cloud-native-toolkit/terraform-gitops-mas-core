@@ -6,8 +6,9 @@ locals {
   instance_yaml_dir = "${local.tmp_dir}/chart/${local.name}"
 
   license_secret_name = "sls-bootstrap"
-
   license_content = var.license_key_file != "" ? file(var.license_key_file) : var.license_key
+  service_account_name = "mas-core-license-job"
+  sls_namespace = "ibm-sls"
 
   channel = "alpha"
   operator_values_content = {
@@ -27,10 +28,10 @@ locals {
     uds_contact_first_name = var.uds_contact_first_name
     uds_contact_last_name = var.uds_contact_last_name
 
-    targetNamespace = "ibm-sls"
+    targetNamespace = local.sls_namespace
     serviceAccount = {
-      name = "mas-core"
-      create = true
+      name = local.service_account_name
+      create = false
       annotations = {}
     }
     image = {
@@ -51,6 +52,18 @@ locals {
 resource gitops_namespace ns {
 
   name = local.namespace
+  create_operator_group = true
+  server_name = var.server_name
+  branch = local.application_branch
+  config = yamlencode(var.gitops_config)
+  credentials = yamlencode(var.git_credentials)
+}
+
+
+resource gitops_namespace sls_ns {
+  count = local.license_content != "" ? 1 : 0
+
+  name = local.sls_namespace
   create_operator_group = true
   server_name = var.server_name
   branch = local.application_branch
@@ -98,6 +111,8 @@ resource null_resource create_entitlement_secret {
 }
 
 resource null_resource create_license_secret {
+  count = local.license_content != "" ? 1 : 0
+
   provisioner "local-exec" {
     command = "${path.module}/scripts/create-license-secret.sh ${local.license_secret_name} ${gitops_namespace.ns.name} '${var.host_id}' '${local.secret_dir}'"
 
@@ -105,6 +120,40 @@ resource null_resource create_license_secret {
       BIN_DIR = data.clis_check.clis.bin_dir
       LICENSE_KEY = local.license_content
     }
+  }
+}
+
+resource gitops_service_account job_sa {
+  count = local.license_content != "" ? 1 : 0
+
+  name = local.service_account_name
+  namespace = gitops_namespace.ns.name
+  server_name = var.server_name
+  branch = local.application_branch
+  config = var.gitops_config
+  credentials = var.git_credentials
+  rules {
+    api_groups = [""]
+    resources = ["secrets"]
+    verbs = ["*"]
+  }
+}
+
+resource gitops_service_account job_rbac {
+  count = local.license_content != "" ? 1 : 0
+
+  name = local.service_account_name
+  namespace = gitops_namespace.ns.name
+  server_name = var.server_name
+  branch = local.application_branch
+  config = var.gitops_config
+  credentials = var.git_credentials
+  create_service_account = false
+  rbac_namespace = gitops_namespace.sls_ns.name
+  rules {
+    api_groups = [""]
+    resources = ["secrets"]
+    verbs = ["*"]
   }
 }
 
@@ -130,7 +179,7 @@ resource gitops_seal_secrets secret {
 
 
 resource gitops_module instance {
-  depends_on = [gitops_seal_secrets.secret, gitops_module.operator, null_resource.create_instance_yaml]
+  depends_on = [gitops_seal_secrets.secret, gitops_module.operator, null_resource.create_instance_yaml, gitops_service_account.job_sa, gitops_service_account.job_rbac]
 
   name = local.name
   namespace = gitops_namespace.ns.name
