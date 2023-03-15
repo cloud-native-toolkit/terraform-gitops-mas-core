@@ -6,6 +6,7 @@ Module to populate a gitops repo with the resources to provision the MAS Auto Op
 
 The module depends on the following software components:
 
+
 ### Command-line tools
 
 - terraform - v0.15
