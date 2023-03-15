@@ -72,6 +72,10 @@ check_k8s_resource () {
   if [[ "${GITOPS_TYPE}" =~ deployment|statefulset|daemonset ]]; then
     kubectl rollout status "${GITOPS_TYPE}" "${NAME}" -n "${NS}" || exit 1
   elif [[ "${GITOPS_TYPE}" == "job" ]]; then
+    kubectl get pods -n "${NS}" | grep "${NAME}"
+    local pod_name=$(kubectl get pods -n "${NS}" | grep "${NAME}" | sed -E "s/^([^ ]+).*/\1/g")
+
+    kubectl logs -n "${NS}" "${pod_name}"
     kubectl wait --for=condition=complete "job/${NAME}" -n "${NS}" || exit 1
   fi
 
