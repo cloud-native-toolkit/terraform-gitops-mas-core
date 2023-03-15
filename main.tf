@@ -130,8 +130,8 @@ resource gitops_service_account job_sa {
   namespace = gitops_namespace.ns.name
   server_name = var.server_name
   branch = local.application_branch
-  config = var.gitops_config
-  credentials = var.git_credentials
+  config = yamlencode(var.gitops_config)
+  credentials = yamlencode(var.git_credentials)
   rules {
     api_groups = [""]
     resources = ["secrets"]
@@ -146,8 +146,8 @@ resource gitops_service_account job_rbac {
   namespace = gitops_namespace.ns.name
   server_name = var.server_name
   branch = local.application_branch
-  config = var.gitops_config
-  credentials = var.git_credentials
+  config = yamlencode(var.gitops_config)
+  credentials = yamlencode(var.git_credentials)
   create_service_account = false
   rbac_namespace = gitops_namespace.sls_ns[0].name
   rules {
