@@ -32,7 +32,7 @@ spec:
               
               oc new-project "${NAMESPACE}"
               oc get secret "${SECRET_NAME}" -o json | \
-                jq '{"apiVersion":.apiVersion,"type":.type,"kind":.kind,"metadata":{"name":.metadata.name,"labels":.labels},"data":.data}' | \
-                oc apply -n "${NAMESPACE}" -f -
+                jq --arg NS "${NAMESPACE}" '{"apiVersion":.apiVersion,"type":.type,"kind":.kind,"metadata":{"name":.metadata.name,"namespace":$NS,"labels":.labels},"data":.data}' | \
+                oc apply -f -
       restartPolicy: Never
 {{- end }}
