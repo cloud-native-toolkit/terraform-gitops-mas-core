@@ -134,7 +134,7 @@ resource gitops_service_account job_sa {
   credentials = yamlencode(var.git_credentials)
   rules {
     api_groups = [""]
-    resources = ["secrets"]
+    resources = ["secrets","configmaps"]
     verbs = ["*"]
   }
 }
