@@ -16,6 +16,11 @@ spec:
         run: {{ include "mas-core.name" . }}
     spec:
       serviceAccountName: {{ include "mas-core.serviceAccountName" . }}
+      volumes:
+        - name: scripts
+          configMap:
+            name: {{ include "mas-core.fullname" . }}
+            defaultMode: 0777
       containers:
         - image: {{ printf "%s:%s" .Values.image.imageName .Values.image.imageTag }}
           name: toolkit
@@ -24,13 +29,10 @@ spec:
               value: {{ default "ibm-sls" .Values.targetNamespace }}
             - name: SECRET_NAME
               value: {{ .Values.secretName }}
+          volumeMounts:
+            - mountPath: /scripts
+              name: scripts
           command:
-            - /bin/bash
-            - -c
-            - |
-              set -ex
-              
-              oc new-project "${NAMESPACE}"
-              oc get secret "${SECRET_NAME}" -o json | jq --arg NS "${NAMESPACE}" '{"apiVersion":.apiVersion,"type":.type,"kind":.kind,"metadata":{"name":.metadata.name,"namespace":$NS,"labels":.labels},"data":.data}' | oc apply -f -
+            - /scripts/copy-secret.sh
       restartPolicy: Never
 {{- end }}
