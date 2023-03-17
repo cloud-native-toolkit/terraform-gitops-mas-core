@@ -9,14 +9,17 @@ if [[ -z "${NAMESPACE}" ]]; then
   exit 1
 fi
 
+if [[ -z "${CURRENT_NAMESPACE}" ]]; then
+  echo "CURRENT_NAMESPACE not set" &>2
+  exit 1
+fi
+
 if [[ -z "${SECRET_NAME}" ]]; then
   echo "SECRET_NAME not set" &>2
   exit 1
 fi
 
 set -ex
-
-CURRENT_NAMESPACE=$(oc project -q)
 
 # wait for secret
 check_k8s_resource "${CURRENT_NAMESPACE}" secret "${SECRET_NAME}" || exit 1

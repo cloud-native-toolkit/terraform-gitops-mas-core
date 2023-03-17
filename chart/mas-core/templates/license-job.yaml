@@ -25,6 +25,8 @@ spec:
         - image: {{ printf "%s:%s" .Values.image.imageName .Values.image.imageTag }}
           name: toolkit
           env:
+            - name: CURRENT_NAMESPACE
+              value: {{ .Release.Namespace }}
             - name: NAMESPACE
               value: {{ default "ibm-sls" .Values.targetNamespace }}
             - name: SECRET_NAME
