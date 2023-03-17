@@ -132,27 +132,10 @@ resource gitops_service_account job_sa {
   branch = local.application_branch
   config = yamlencode(var.gitops_config)
   credentials = yamlencode(var.git_credentials)
+  cluster_scope = true
   rules {
     api_groups = [""]
     resources = ["secrets","configmaps"]
-    verbs = ["*"]
-  }
-}
-
-resource gitops_service_account job_rbac {
-  count = local.license_content != "" ? 1 : 0
-
-  name = local.service_account_name
-  namespace = gitops_namespace.ns.name
-  server_name = var.server_name
-  branch = local.application_branch
-  config = yamlencode(var.gitops_config)
-  credentials = yamlencode(var.git_credentials)
-  create_service_account = false
-  rbac_namespace = gitops_namespace.sls_ns[0].name
-  rules {
-    api_groups = [""]
-    resources = ["secrets"]
     verbs = ["*"]
   }
 }
@@ -179,7 +162,7 @@ resource gitops_seal_secrets secret {
 
 
 resource gitops_module instance {
-  depends_on = [gitops_seal_secrets.secret, gitops_module.operator, null_resource.create_instance_yaml, gitops_service_account.job_sa, gitops_service_account.job_rbac]
+  depends_on = [gitops_seal_secrets.secret, gitops_module.operator, null_resource.create_instance_yaml, gitops_service_account.job_sa]
 
   name = local.name
   namespace = gitops_namespace.ns.name
