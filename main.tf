@@ -135,7 +135,12 @@ resource gitops_service_account job_sa {
   cluster_scope = true
   rules {
     api_groups = [""]
-    resources = ["secrets","configmaps"]
+    resources = ["secrets","configmaps","namespaces"]
+    verbs = ["*"]
+  }
+  rules {
+    api_groups = ["project.openshift.io"]
+    resources = ["projects"]
     verbs = ["*"]
   }
 }
