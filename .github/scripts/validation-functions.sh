@@ -31,13 +31,13 @@ check_k8s_namespace () {
   local NS="$1"
 
   count=0
-  until kubectl get namespace "${NS}" 1> /dev/null 2> /dev/null || [[ $count -eq 40 ]]; do
+  until kubectl get namespace "${NS}" 1> /dev/null 2> /dev/null || [[ $count -eq 60 ]]; do
     echo "Waiting for namespace: ${NS}"
     count=$((count + 1))
     sleep 60
   done
 
-  if [[ $count -eq 40 ]]; then
+  if [[ $count -eq 60 ]]; then
     echo "Timed out waiting for namespace: ${NS}" >&2
     exit 1
   else
@@ -54,7 +54,7 @@ check_k8s_resource () {
   echo "Checking for resource: ${NS}/${GITOPS_TYPE}/${NAME}"
 
   count=0
-  local limit=40
+  local limit=60
   until kubectl get "${GITOPS_TYPE}" "${NAME}" -n "${NS}" 1> /dev/null 2> /dev/null || [[ $count -gt $limit ]]; do
     echo "Waiting for ${GITOPS_TYPE}/${NAME} in ${NS}"
     count=$((count + 1))
@@ -76,7 +76,7 @@ check_k8s_resource () {
     local pod_name=$(kubectl get pods -n "${NS}" | grep "${NAME}" | sed -E "s/^([^ ]+).*/\1/g")
 
     kubectl logs -n "${NS}" "${pod_name}"
-    kubectl wait --for=condition=complete "job/${NAME}" -n "${NS}" || exit 1
+    kubectl wait --for=condition=complete "job/${NAME}" -n "${NS}" --timeout=1h || exit 1
   fi
 
   echo "Done checking for resource: ${NS}/${GITOPS_TYPE}/${NAME}"
