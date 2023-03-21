@@ -72,7 +72,6 @@ check_k8s_resource ibm-common-services deployments event-api-deployment || exit 
 
 check_k8s_resource "${NAMESPACE}" secret sls-bootstrap || exit 1
 check_k8s_resource "${NAMESPACE}" job license-job || exit 1
-check_k8s_resource "ibm-sls" secret sls-bootstrap || exit 1
 
 check_k8s_namespace mas-inst1-core || exit 1
 check_k8s_resource mas-inst1-core suite inst1 || exit 1
