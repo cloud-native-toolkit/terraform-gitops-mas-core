@@ -28,6 +28,8 @@ fi
 
 export KUBECONFIG=$(cat .kubeconfig)
 NAMESPACE=$(jq -r '.namespace // "default"' gitops-output.json)
+MAS_INSTANCE_ID=$(jq -r '.mas_instance_id // "inst1"' gitops-output.json)
+CORE_NAMESPACE=$(jq --arg INST_ID "${MAS_INSTANCE_ID}" -r '.core_namespace // "mas-${INST_ID}-core"' gitops-output.json)
 COMPONENT_NAME=$(jq -r '.name // "my-module"' gitops-output.json)
 BRANCH=$(jq -r '.branch // "main"' gitops-output.json)
 SERVER_NAME=$(jq -r '.server_name // "default"' gitops-output.json)
@@ -73,12 +75,12 @@ check_k8s_resource ibm-common-services deployments event-api-deployment || exit 
 check_k8s_resource "${NAMESPACE}" secret sls-bootstrap || exit 1
 check_k8s_resource "${NAMESPACE}" job license-job || exit 1
 
-check_k8s_namespace mas-inst1-core || exit 1
-check_k8s_resource mas-inst1-core suite inst1 || exit 1
+check_k8s_namespace "${CORE_NAMESPACE}" || exit 1
+check_k8s_resource "${CORE_NAMESPACE}" suite "${MAS_INSTANCE_ID}" || exit 1
 
 count=0
 while [[ count -lt 40 ]]; do
-  RESULT=$(kubectl get -n mas-inst1-core suite inst1 -o json)
+  RESULT=$(kubectl get -n "${CORE_NAMESPACE}" suite "${MAS_INSTANCE_ID}" -o json)
 
   CONDITION=$(echo "${RESULT}" | jq -c '.status.conditions[] | select(.type == "SLSIntegrationReady")')
 

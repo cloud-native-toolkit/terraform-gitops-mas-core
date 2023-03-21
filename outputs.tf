@@ -35,6 +35,12 @@ output "type" {
   depends_on  = [gitops_module.instance]
 }
 
+output "core_namespace" {
+  description = "The namespace where the core instance has been deployed"
+  value       = local.core_namespace
+  depends_on = [gitops_module.instance]
+}
+
 output "entitlement_secret_name" {
   description = "The name of the secret that contains the entitlement_key"
   value       = local.secret_name
