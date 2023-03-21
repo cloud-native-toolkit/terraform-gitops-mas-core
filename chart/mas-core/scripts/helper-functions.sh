@@ -1,32 +1,5 @@
 #!/usr/bin/env bash
 
-validate_gitops_content () {
-  local NS="$1"
-  local GITOPS_LAYER="$2"
-  local GITOPS_SERVER_NAME="$3"
-  local GITOPS_TYPE="$4"
-  local GITOPS_COMPONENT_NAME="$5"
-  local PAYLOAD_FILE="${6:-values.yaml}"
-
-  echo "Validating: namespace=${NS}, layer=${GITOPS_LAYER}, server=${GITOPS_SERVER_NAME}, type=${GITOPS_TYPE}, component=${GITOPS_COMPONENT_NAME}"
-
-  if [[ ! -f "argocd/${GITOPS_LAYER}/cluster/${GITOPS_SERVER_NAME}/${GITOPS_TYPE}/${NS}-${GITOPS_COMPONENT_NAME}.yaml" ]]; then
-    echo "ArgoCD config missing - argocd/${GITOPS_LAYER}/cluster/${GITOPS_SERVER_NAME}/${GITOPS_TYPE}/${NS}-${GITOPS_COMPONENT_NAME}.yaml" >&2
-    exit 1
-  fi
-
-  echo "Printing argocd/${GITOPS_LAYER}/cluster/${GITOPS_SERVER_NAME}/${GITOPS_TYPE}/${NS}-${GITOPS_COMPONENT_NAME}.yaml"
-  cat "argocd/${GITOPS_LAYER}/cluster/${GITOPS_SERVER_NAME}/${GITOPS_TYPE}/${NS}-${GITOPS_COMPONENT_NAME}.yaml"
-
-  if [[ ! -f "payload/${GITOPS_LAYER}/namespace/${NS}/${GITOPS_COMPONENT_NAME}/${PAYLOAD_FILE}" ]]; then
-    echo "Application values not found - payload/${GITOPS_LAYER}/namespace/${NS}/${GITOPS_COMPONENT_NAME}/${PAYLOAD_FILE}" >&2
-    exit 1
-  fi
-
-  echo "Printing payload/${GITOPS_LAYER}/namespace/${NS}/${GITOPS_COMPONENT_NAME}/${PAYLOAD_FILE}"
-  cat "payload/${GITOPS_LAYER}/namespace/${NS}/${GITOPS_COMPONENT_NAME}/${PAYLOAD_FILE}"
-}
-
 check_k8s_namespace () {
   local NS="$1"
 
@@ -76,7 +49,7 @@ check_k8s_resource () {
     local pod_name=$(kubectl get pods -n "${NS}" | grep "${NAME}" | sed -E "s/^([^ ]+).*/\1/g")
 
     kubectl logs -n "${NS}" "${pod_name}"
-    kubectl wait --for=condition=complete "job/${NAME}" -n "${NS}" --timeout=1h || exit 1
+    kubectl wait --for=condition=complete "job/${NAME}" -n "${NS}" --timeout=90m || exit 1
   fi
 
   echo "Done checking for resource: ${NS}/${GITOPS_TYPE}/${NAME}"

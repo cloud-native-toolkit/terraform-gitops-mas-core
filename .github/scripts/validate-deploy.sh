@@ -70,6 +70,9 @@ check_k8s_resource ibm-common-services deployment kafka-entity-operator || exit 
 
 check_k8s_resource ibm-common-services deployments event-api-deployment || exit 1
 
+check_k8s_resource "${NAMESPACE}" secret sls-bootstrap || exit 1
+check_k8s_resource "${NAMESPACE}" job license-job || exit 1
+
 check_k8s_namespace mas-inst1-core || exit 1
 check_k8s_resource mas-inst1-core suite inst1 || exit 1
 
@@ -82,6 +85,9 @@ while [[ count -lt 40 ]]; do
   SLS_INTEGRATION_REASON=$(echo "${CONDITION}" | jq -r '.reason')
   echo "SLS Integration reason: ${SLS_INTEGRATION_REASON}"
   if [[ "${SLS_INTEGRATION_REASON}" == "MissingLicenseFile" ]]; then
+    echo "Waiting for license to be applied"
+  elif [[ "${SLS_INTEGRATION_REASON}" == "Ready" ]]; then
+    echo "MAS Core instance is ready"
     break
   fi
 

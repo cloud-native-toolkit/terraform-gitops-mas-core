@@ -13,3 +13,13 @@ uds_storage_class: ""
 uds_contact_email: ""
 uds_contact_first_name: ""
 uds_contact_last_name: ""
+
+targetNamespace: ibm-sls
+serviceAccount:
+  name: "mas-core"
+  create: true
+  annotations: {}
+image:
+  imageName: "quay.io/cloudnativetoolkit/cli-tools-core"
+  imageTag: "v1.1-v1.6.1"
+secretName: ""
