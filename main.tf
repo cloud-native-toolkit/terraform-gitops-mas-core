@@ -47,6 +47,8 @@ locals {
   application_branch = "main"
   namespace = "masauto-operator-system"
   layer_config = var.gitops_config[local.layer]
+
+  core_namespace = "mas-${var.mas_instance_id}-core"
 }
 
 resource gitops_namespace ns {
